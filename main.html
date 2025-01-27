@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Nada Hand Made</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin-top: 70px;
+      }
+      .card {
+        margin: 20px auto;
+        max-width: 350px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .navbar-brand {
+        font-weight: bold;
+        font-size: 1.5rem;
+      }
+      .btn-warning {
+        width: 100%;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 20px;
+        padding: 20px;
+      }
+      .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+      }
+      .card-text {
+        margin-bottom: 15px;
+        font-size: 1rem;
+        color: #555;
+      }
+      .btn-warning p {
+        margin: 0;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      let cart = [];
+
+      function addToCart(name, price) {
+        const item = cart.find(i => i.name === name);
+        if (item) {
+          item.quantity++;
+        } else {
+          cart.push({ name, price, quantity: 1 });
+        }
+        updateCart();
+      }
+
+      function removeFromCart(name) {
+        cart = cart.filter(i => i.name !== name);
+        updateCart();
+      }
+
+      function updateQuantity(name, delta) {
+        const item = cart.find(i => i.name === name);
+        if (item) {
+          item.quantity += delta;
+          if (item.quantity <= 0) {
+            removeFromCart(name);
+          }
+        }
+        updateCart();
+      }
+
+      function updateCart() {
+        const cartContainer = document.getElementById('cart-items');
+        cartContainer.innerHTML = '';
+        let total = 0;
+        cart.forEach(item => {
+          total += item.price * item.quantity;
+          cartContainer.innerHTML += `
+            <div class="cart-item">
+              <span>${item.name} (x${item.quantity})</span>
+              <span>
+                <button class="btn btn-sm btn-danger" onclick="updateQuantity('${item.name}', -1)">-</button>
+                <button class="btn btn-sm btn-success" onclick="updateQuantity('${item.name}', 1)">+</button>
+                <button class="btn btn-sm btn-warning" onclick="removeFromCart('${item.name}')">Remove</button>
+              </span>
+            </div>`;
+        });
+        document.getElementById('cart-total').innerText = `Total: $${total.toFixed(2)}`;
+      }
+
+      function goToCheckout() {
+        const name = document.getElementById('user-name').value;
+        const email = document.getElementById('user-email').value;
+        const address = document.getElementById('user-address').value;
+        const phone = document.getElementById('user-phone').value;
+
+        if (!name || !email || !address || !phone) {
+          alert('Please fill all fields.');
+          return;
+        }
+
+        let message = `Name: ${name}%0AEmail: ${email}%0AAddress: ${address}%0APhone: ${phone}%0AOrder:%0A`;
+        cart.forEach(item => {
+          message += `${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}%0A`;
+        });
+        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        message += `Total: $${total.toFixed(2)}`;
+
+        const whatsappURL = `https://wa.me/+2001501377311?text=${message}`;
+        window.open(whatsappURL, '_blank');
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Nada Hand Made</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Menu</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="https://www.facebook.com/">Facebook</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  More
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <li><a class="dropdown-item" href="#">About Us</a></li>
+                  <li><a class="dropdown-item" href="#">Contact</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Support</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+      <!-- Card 1 -->
+      <div class="card">
+        <div id="carousel1" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="img/P1/p1 (1).jpg" class="d-block w-100" alt="Handmade Bag 1">
+            </div>
+            <div class="carousel-item">
+              <img src="img/P1/p1 (2).jpg" class="d-block w-100" alt="Handmade Bag 2">
+            </div>
+            <div class="carousel-item">
+              <img src="img/P1/p1 (3).jpg" class="d-block w-100" alt="Handmade Bag 3">
+            </div>
+            <div class="carousel-item">
+              <img src="img/P1/p1 (4).jpg" class="d-block w-100" alt="Handmade Bag 4">
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carousel1" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carousel1" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        <div class="card-body text-center">
+          <p class="card-text">الشنطة دي بجد تحفة فنية بكل معنى الكلمة! تصميمها الرقيق والبسيط بيضيف لمسة شيك لأي إطلالة. الخرز اللي فيها مش بس جميل، ده كمان له طابع مميز يخليك تحبيه من أول نظرة.</p>
+          <button class="btn btn-warning" onclick="addToCart('Handmade Bag', 360)">
+            <p>code5</p>
+            $360 - Add to Cart
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card">
+        <div id="carousel2" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="img/P2/p1.1.jpg" class="d-block w-100" alt="Stylish Bag 1">
+            </div>
+            <div class="carousel-item">
+              <img src="img/P2/p1.2.jpg" class="d-block w-100" alt="Stylish Bag 2">
+            </div>
+            <div class="carousel-item">
+              <img src="img/P2/p1.3.jpg" class="d-block w-100" alt="Stylish Bag 3">
+            </div>
+            <div class="carousel-item">
+              <img src="img/P2/p1.4.jpg" class="d-block w-100" alt="Stylish Bag 4">
+            </div>
+            <div class="carousel-item">
+              <img src="img/P2/p1.5.jpg" class="d-block w-100" alt="Stylish Bag 5">
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carousel2" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carousel2" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        <div class="card-body text-center">
+          <p class="card-text">أحلى شنطة وأول تجربة عملت بيها حاجة مميزة جدًا! الشنطة دي معمولة بكل حب وصبر، واخدت وقتها عشان تطلع بالجمال ده.</p>
+          <button class="btn btn-warning" onclick="addToCart('Stylish Bag', 650)">
+            <p>code15</p> £650 - Add to Cart
+          </button>
+          <hr>
+          <button class="btn btn-warning" onclick="addToCart('Stylish Bag', 450)">
+            <p>code25</p> باللؤلؤ العادي : £450
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card">
+        <div id="carousel3" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="img/p3/p1 (1).jpg" class="d-block w-100" alt="Elegant Bag 1">
+            </div>
+            <div class="carousel-item">
+              <img src="img/p3/p1 (2).jpg" class="d-block w-100" alt="Elegant Bag 2">
+            </div>
+            <div class="carousel-item">
+              <img src="img/p3/p1 (3).jpg" class="d-block w-100" alt="Elegant Bag 3">
+            </div>
+            <div class="carousel-item">
+              <img src="img/p3/p1 (4).jpg" class="d-block w-100" alt="Elegant Bag 4">
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carousel3" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carousel3" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        <div class="card-body text-center">
+          <p class="card-text">مقاس كبير، مناسبة لكل مشاويرك حرفيًا! الشنطة المثالية لكل وقت وكل مكان.</p>
+          <button class="btn btn-warning" onclick="addToCart('Elegant Bag', 360)">
+            <p>code35</p> $360 - Add to Cart
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="card">
+        <div id="carousel4" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="img/p4/p1 (1).jpg" class="d-block w-100" alt="Casual Bag 1">
+            </div>
+            <div class="carousel-item">
+              <img src="img/p4/p1 (2).jpg" class="d-block w-100" alt="Casual Bag 2">
+            </div>
+            <div class="carousel-item">
+              <img src="img/p4/p1 (3).jpg" class="d-block w-100" alt="Casual Bag 3">
+            </div>
+            <div class="carousel-item">
+              <img src="img/p4/p1 (4).jpg" class="d-block w-100" alt="Casual Bag 4">
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carousel4" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carousel4" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        <div class="card-body text-center">
+          <p class="card-text">شنطة خفيفة ومريحة جدًا وتحمل كل حاجتك فيها من غير ما تحس.</p>
+          <button class="btn btn-warning" onclick="addToCart('Casual Bag', 540)">
+            <p>code10</p> $540 - Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Cart Summary -->
+    <div class="container mt-4">
+      <h4>Your Cart</h4>
+      <div id="cart-items"></div>
+      <h5 id="cart-total">Total: $0.00</h5>
+      <hr>
+      <h5>Checkout</h5>
+      <input type="text" id="user-name" class="form-control mb-2" placeholder="Your Name">
+      <input type="email" id="user-email" class="form-control mb-2" placeholder="Your Email">
+      <input type="text" id="user-address" class="form-control mb-2" placeholder="Your Address">
+      <input type="text" id="user-phone" class="form-control mb-2" placeholder="Your Phone">
+      <button class="btn btn-warning" onclick="goToCheckout()">Go to Checkout</button>
+    </div>
+  </body>
+</html>
